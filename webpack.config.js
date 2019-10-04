@@ -4,6 +4,9 @@ module.exports = {
   entry: {
     app: "./src/index.js"
   },
+  devServer: {
+    hot: false
+  },
   module: {
     rules: [
       {
