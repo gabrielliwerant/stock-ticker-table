@@ -1,6 +1,7 @@
 import React from 'react';
 import { assert } from 'chai';
 import { mount } from 'enzyme';
+import { cloneDeep } from 'lodash';
 import App from '../src/App.js';
 
 describe('<App />', () => {
@@ -91,6 +92,42 @@ describe('<App />', () => {
 
     const actualResult = instance.transformResponseDataToDisplayData(stubResponseData);
     assert.deepEqual(actualResult, expectedResult);
+
+    wrapper.unmount();
+  });
+
+  it('properly toggles display variable for tickers', () => {
+    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
+    const instance = wrapper.instance();
+    const stub = [{
+      "Ticker": "AAPL",
+      "Latest Price": 220.82,
+      "Average Daily Change": "0.93",
+      isVisible: true
+    }];
+
+    wrapper.setState({
+      data: stub,
+      displayList: cloneDeep(stub)
+    });
+
+    // Should toggle off
+    instance.handleTickerDisplayToggle("AAPL");
+
+    let actualResultData = wrapper.state().data[0].isVisible;
+    let actualResultSisplayList = wrapper.state().displayList[0].isVisible;
+
+    assert.strictEqual(actualResultData, false);
+    assert.strictEqual(actualResultSisplayList, false);
+
+    // Should toggle back on
+    instance.handleTickerDisplayToggle("AAPL");
+
+    actualResultData = wrapper.state().data[0].isVisible;
+    actualResultSisplayList = wrapper.state().displayList[0].isVisible;
+
+    assert.strictEqual(actualResultData, true);
+    assert.strictEqual(actualResultSisplayList, true);
 
     wrapper.unmount();
   });
