@@ -1,4 +1,12 @@
 import React, { Component, Fragment } from "react";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+
 import Apple from "../stubs/Apple.js";
 import Facebook from "../stubs/Facebook.js";
 import Tesla from "../stubs/Tesla.js";
@@ -84,15 +92,30 @@ class App extends Component {
     return (
       <Fragment>
         <h1>AIX Ticker Test</h1>
-        {data
-          ? (
-            <ol>
+        <Paper>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Ticker</TableCell>
+                <TableCell align="right">Latest Price</TableCell>
+                <TableCell align="right">Average Daily Change</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {data
-                .sort((a, b) => this.compareLatestPrice(a, b))
-                .map((d, index) => <li key={index}>{d.Ticker}</li>)}
-            </ol>
-          )
-          : "Loading"}
+                ? data
+                    .sort((a, b) => this.compareLatestPrice(a, b))
+                    .map(d => (
+                      <TableRow key={d.Ticker}>
+                        <TableCell>{d.Ticker}</TableCell>
+                        <TableCell align="right">{d["Latest Price"]}</TableCell>
+                        <TableCell align="right">{d["Average Daily Change"]}</TableCell>
+                      </TableRow >
+                    ))
+                : "Loading"}
+              </TableBody>
+            </Table>
+          </Paper>
       </Fragment>
     );
   }
