@@ -18,16 +18,49 @@ class App extends Component {
     super(props);
 
     this.state = {
-      [STOCK_TICKERS.Apple]: null,
-      [STOCK_TICKERS.Facebook]: null,
-      [STOCK_TICKERS.Tesla]: null,
-      [STOCK_TICKERS.Snapchat]: null,
-      [STOCK_TICKERS.Google]: null
+      data: []
     };
   }
 
-  resolveRequest(ticker, data) {
-    this.setState({ [ticker]: data } );
+  calculateAverageDailyChange(first, last, numberOfDays) {
+    return (first - last) / numberOfDays;
+  }
+
+  compareLatestPrice(a, b) {
+    if (a["Latest Price"] < b["Latest Price"]) return 1;
+    if (a["Latest Price"] > b["Latest Price"]) return -1;
+    return 0;
+  }
+
+  compareDates(a, b) {
+    if (a < b) return 1;
+    if (a > b) return -1;
+    return 0;
+  }
+
+  resolveRequest(ticker, responseData) {
+    const original = responseData["Time Series (Daily)"];
+    const orderedDates = Object.keys(original).sort((a, b) => this.compareDates(a, b));
+    const orderedDatesLen = orderedDates.length;
+    const averageDailyChange = this.calculateAverageDailyChange(
+      original[orderedDates[0]]["4. close"],
+      original[orderedDates[orderedDatesLen - 1]]["4. close"],
+      orderedDatesLen
+    );
+    const display = {
+      "Ticker": responseData["Meta Data"]["2. Symbol"],
+      "Latest Price": parseFloat(original[orderedDates[0]]["4. close"], 10),
+      "Average Daily Change": averageDailyChange
+    };
+    const { data } = this.state;
+    const index = data.findIndex(d => d.Ticker === display.Ticker);
+
+    // Non-negative index means we have an existed data set, so we overwrite it.
+    // Otherwise, we push a new one.
+    if (~index) data[index] = display;
+    else data.push(display);
+
+    this.setState({ data });
   }
 
   componentDidMount() {
@@ -39,16 +72,20 @@ class App extends Component {
   }
 
   render() {
-    const { AAPL, FB, TSLA, SNAP, GOOG } = this.state;
+    const { data } = this.state;
 
     return (
       <Fragment>
         <h1>AIX Ticker Test</h1>
-        <div>{AAPL ? AAPL["Meta Data"]["2. Symbol"] : "Loading"}</div>
-        <div>{FB ? FB["Meta Data"]["2. Symbol"] : "Loading"}</div>
-        <div>{TSLA ? TSLA["Meta Data"]["2. Symbol"] : "Loading"}</div>
-        <div>{SNAP ? SNAP["Meta Data"]["2. Symbol"] : "Loading"}</div>
-        <div>{GOOG ? GOOG["Meta Data"]["2. Symbol"] : "Loading"}</div>
+        {data
+          ? (
+            <ol>
+              {data
+                .sort((a, b) => this.compareLatestPrice(a, b))
+                .map((d, index) => <li key={index}>{d.Ticker}</li>)}
+            </ol>
+          )
+          : "Loading"}
       </Fragment>
     );
   }
