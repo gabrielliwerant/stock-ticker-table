@@ -13,6 +13,7 @@ Displays a list of tickers with some retrieved data, some derived data, and disp
 
 ## Running in production
 
+1. Set `USE_STUBBED_DATA` to `false` in `src/index.js`
 1. `npm run build`
 1. Deploy `dist` folder (contains all main assets)
 1. Point to `index.html`
