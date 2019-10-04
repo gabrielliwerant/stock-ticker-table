@@ -61,7 +61,8 @@ class App extends Component {
     return {
       "Ticker": responseData["Meta Data"]["2. Symbol"],
       "Latest Price": parseFloat(original[orderedDates[0]]["4. close"], 10),
-      "Average Daily Change": averageDailyChange.toFixed(2)
+      "Average Daily Change": averageDailyChange.toFixed(2),
+      isVisible: true
     };
   }
 
@@ -74,6 +75,15 @@ class App extends Component {
     // Otherwise, we push a new one.
     if (~index) data[index] = display;
     else data.push(display);
+
+    this.setState({ data });
+  }
+
+  handleTickerDisplayToggle(ticker) {
+    const { data } = this.state;
+    const index = data.findIndex(d => d.Ticker === ticker);
+
+    if (~index) data[index].isVisible = !data[index].isVisible;
 
     this.setState({ data });
   }
@@ -92,6 +102,13 @@ class App extends Component {
     return (
       <Fragment>
         <Typography variant="h3">AIX Ticker Test</Typography>
+        <ul>
+          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Apple)}>{STOCK_TICKERS.Apple}</button></li>
+          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Facebook)}>{STOCK_TICKERS.Facebook}</button></li>
+          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Tesla)}>{STOCK_TICKERS.Tesla}</button></li>
+          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Snapchat)}>{STOCK_TICKERS.Snapchat}</button></li>
+          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Google)}>{STOCK_TICKERS.Google}</button></li>
+        </ul>
         <Paper>
           <Table>
             <TableHead>
@@ -105,7 +122,7 @@ class App extends Component {
               {data
                 ? data
                     .sort((a, b) => this.compareLatestPrice(a, b))
-                    .map(d => (
+                    .map(d => d.isVisible && (
                       <TableRow key={d.Ticker}>
                         <TableCell>{d.Ticker}</TableCell>
                         <TableCell align="right">{d["Latest Price"]}</TableCell>

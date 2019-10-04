@@ -85,7 +85,8 @@ describe('<App />', () => {
     const expectedResult = {
       "Ticker": "AAPL",
       "Latest Price": 220.82,
-      "Average Daily Change": "0.93"
+      "Average Daily Change": "0.93",
+      isVisible: true
     };
 
     const actualResult = instance.transformResponseDataToDisplayData(stubResponseData);
