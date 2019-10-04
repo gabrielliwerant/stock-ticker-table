@@ -1,11 +1,11 @@
-import React from 'react';
-import { assert } from 'chai';
-import { mount } from 'enzyme';
-import { cloneDeep } from 'lodash';
-import App from '../src/App.js';
+import React from "react";
+import { assert } from "chai";
+import { mount } from "enzyme";
+import { cloneDeep } from "lodash";
+import App from "../src/App.js";
 
-describe('<App />', () => {
-  it('renders', () => {
+describe("<App />", () => {
+  it("renders", () => {
     const wrapper = mount(<App USE_STUBBED_DATA={true} />);
 
     assert.isDefined(wrapper);
@@ -13,7 +13,7 @@ describe('<App />', () => {
     wrapper.unmount();
   });
 
-  it('properly calculates average daily change', () => {
+  it("properly calculates average daily change", () => {
     const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const expectedResult = 1;
     const actualResult = wrapper.instance().calculateAverageDailyChange(11, 1, 10);
@@ -23,7 +23,7 @@ describe('<App />', () => {
     wrapper.unmount();
   });
 
-  it('properly compares latest price', () => {
+  it("properly compares latest price", () => {
     const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
 
@@ -39,7 +39,7 @@ describe('<App />', () => {
     wrapper.unmount();
   });
 
-  it('properly compares dates', () => {
+  it("properly compares dates", () => {
     const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
 
@@ -55,7 +55,7 @@ describe('<App />', () => {
     wrapper.unmount();
   });
 
-  it('properly transforms response data to display data', () => {
+  it("properly transforms response data to display data", () => {
     const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
     const stubResponseData = {
@@ -96,7 +96,7 @@ describe('<App />', () => {
     wrapper.unmount();
   });
 
-  it('properly toggles display variable for tickers', () => {
+  it("properly toggles display variable for tickers", () => {
     const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
     const stub = [{
