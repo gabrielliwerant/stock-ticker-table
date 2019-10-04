@@ -165,7 +165,7 @@ class App extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data
+              {data && data.length
                 ? data
                     .sort((a, b) => this.compareLatestPrice(a, b))
                     .map(d => d.isVisible && (
@@ -175,7 +175,7 @@ class App extends Component {
                         <TableCell align="right">{d["Average Daily Change"]}</TableCell>
                       </TableRow >
                     ))
-                : "Loading"}
+                : "No Data Loaded"}
               </TableBody>
             </Table>
           </Paper>
