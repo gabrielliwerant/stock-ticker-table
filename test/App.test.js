@@ -17,7 +17,7 @@ describe('<App />', () => {
     const expectedResult = 1;
     const actualResult = wrapper.instance().calculateAverageDailyChange(11, 1, 10);
 
-    assert.strictEqual(expectedResult, actualResult);
+    assert.strictEqual(actualResult, expectedResult);
 
     wrapper.unmount();
   });
@@ -27,13 +27,13 @@ describe('<App />', () => {
     const instance = wrapper.instance();
 
     let actualResult = instance.compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 2 });
-    assert.strictEqual(1, actualResult);
+    assert.strictEqual(actualResult, 1);
 
     actualResult = instance.compareLatestPrice({ "Latest Price": 2 }, { "Latest Price": 1 });
-    assert.strictEqual(-1, actualResult);
+    assert.strictEqual(actualResult, -1);
 
     actualResult = instance.compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 1 });
-    assert.strictEqual(0, actualResult);
+    assert.strictEqual(actualResult, 0);
 
     wrapper.unmount();
   });
@@ -43,13 +43,13 @@ describe('<App />', () => {
     const instance = wrapper.instance();
 
     let actualResult = instance.compareDates(1, 2);
-    assert.strictEqual(1, actualResult);
+    assert.strictEqual(actualResult, 1);
 
     actualResult = instance.compareDates(2, 1);
-    assert.strictEqual(-1, actualResult);
+    assert.strictEqual(actualResult, -1);
 
     actualResult = instance.compareDates(1, 1);
-    assert.strictEqual(0, actualResult);
+    assert.strictEqual(actualResult, 0);
 
     wrapper.unmount();
   });
