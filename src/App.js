@@ -6,6 +6,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import { cloneDeep } from "lodash";
 
 import Apple from "../stubs/Apple.js";
 import Facebook from "../stubs/Facebook.js";
@@ -26,7 +30,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-      data: []
+      data: [],
+      displayList: []
     };
   }
 
@@ -76,16 +81,22 @@ class App extends Component {
     if (~index) data[index] = display;
     else data.push(display);
 
-    this.setState({ data });
+    // We clone here so that we can generate a list that won't be affected by
+    // sorting of the data
+    const displayList = cloneDeep(data);
+
+    this.setState({ data, displayList });
   }
 
   handleTickerDisplayToggle(ticker) {
-    const { data } = this.state;
+    const { data, displayList } = this.state;
     const index = data.findIndex(d => d.Ticker === ticker);
+    const indexDisplay = displayList.findIndex(d => d.Ticker === ticker);
 
     if (~index) data[index].isVisible = !data[index].isVisible;
+    if (~indexDisplay) displayList[indexDisplay].isVisible = !displayList[indexDisplay].isVisible;
 
-    this.setState({ data });
+    this.setState({ data, displayList });
   }
 
   componentDidMount() {
@@ -97,18 +108,27 @@ class App extends Component {
   }
 
   render() {
-    const { data } = this.state;
+    const { data, displayList } = this.state;
 
     return (
       <Fragment>
         <Typography variant="h3">AIX Ticker Test</Typography>
-        <ul>
-          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Apple)}>{STOCK_TICKERS.Apple}</button></li>
-          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Facebook)}>{STOCK_TICKERS.Facebook}</button></li>
-          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Tesla)}>{STOCK_TICKERS.Tesla}</button></li>
-          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Snapchat)}>{STOCK_TICKERS.Snapchat}</button></li>
-          <li><button onClick={() => this.handleTickerDisplayToggle(STOCK_TICKERS.Google)}>{STOCK_TICKERS.Google}</button></li>
-        </ul>
+        <FormGroup row>
+          {displayList && displayList.map(d => (
+            <FormControlLabel
+              key={d.Ticker}
+              control={
+                <Switch
+                  checked={d.isVisible}
+                  onChange={() => this.handleTickerDisplayToggle(d.Ticker)}
+                  value={d.Ticker}
+                  color="primary"
+                />
+              }
+              label={d.Ticker}
+            />
+          ))}
+        </FormGroup>
         <Paper>
           <Table>
             <TableHead>
