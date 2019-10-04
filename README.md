@@ -8,6 +8,7 @@ Displays a list of tickers with some retrieved data, some derived data, and disp
 ## Running in development
 
 1. `npm i`
+1. Set `USE_STUBBED_DATA` to `true` in `src/index.js` if using stubbed data
 1. `npm start`
 
 ## Running in production
