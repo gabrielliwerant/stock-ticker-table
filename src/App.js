@@ -91,7 +91,7 @@ class App extends Component {
 
     return (
       <Fragment>
-        <h1>AIX Ticker Test</h1>
+        <Typography variant="h3">AIX Ticker Test</Typography>
         <Paper>
           <Table>
             <TableHead>
