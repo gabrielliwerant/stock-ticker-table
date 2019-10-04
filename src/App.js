@@ -10,6 +10,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { cloneDeep } from "lodash";
+import axios from "axios";
 
 import Apple from "../stubs/Apple.js";
 import Facebook from "../stubs/Facebook.js";
@@ -100,11 +101,41 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.resolveRequest(Apple);
-    this.resolveRequest(Facebook);
-    this.resolveRequest(Tesla);
-    this.resolveRequest(Snapchat);
-    this.resolveRequest(Google);
+    const { USE_STUBBED_DATA } = this.props;
+
+    if (USE_STUBBED_DATA) {
+      this.resolveRequest(Apple);
+      this.resolveRequest(Facebook);
+      this.resolveRequest(Tesla);
+      this.resolveRequest(Snapchat);
+      this.resolveRequest(Google);
+    } else {
+      const URI = "https://www.alphavantage.co/query";
+      const FUNCTION = "TIME_SERIES_DAILY";
+
+      // TODO: Hide me in environment variable for production
+      const API_KEY = "BIW60Z3KKM36A33Z";
+
+      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Apple}&apikey=${API_KEY}`)
+        .then(res => this.resolveRequest(res.data))
+        .catch(err => console.log(err));
+
+      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Facebook}&apikey=${API_KEY}`)
+        .then(res => this.resolveRequest(res.data))
+        .catch(err => console.log(err));
+
+      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Tesla}&apikey=${API_KEY}`)
+        .then(res => this.resolveRequest(res.data))
+        .catch(err => console.log(err));
+
+      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Snapchat}&apikey=${API_KEY}`)
+        .then(res => this.resolveRequest(res.data))
+        .catch(err => console.log(err));
+
+      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Google}&apikey=${API_KEY}`)
+        .then(res => this.resolveRequest(res.data))
+        .catch(err => console.log(err));
+    }
   }
 
   render() {

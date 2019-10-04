@@ -5,7 +5,7 @@ import App from '../src/App.js';
 
 describe('<App />', () => {
   it('renders', () => {
-    const wrapper = mount(<App />);
+    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
 
     assert.isDefined(wrapper);
 
@@ -13,7 +13,7 @@ describe('<App />', () => {
   });
 
   it('properly calculates average daily change', () => {
-    const wrapper = mount(<App />);
+    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const expectedResult = 1;
     const actualResult = wrapper.instance().calculateAverageDailyChange(11, 1, 10);
 
@@ -23,7 +23,7 @@ describe('<App />', () => {
   });
 
   it('properly compares latest price', () => {
-    const wrapper = mount(<App />);
+    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
 
     let actualResult = instance.compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 2 });
@@ -39,7 +39,7 @@ describe('<App />', () => {
   });
 
   it('properly compares dates', () => {
-    const wrapper = mount(<App />);
+    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
 
     let actualResult = instance.compareDates(1, 2);
@@ -55,7 +55,7 @@ describe('<App />', () => {
   });
 
   it('properly transforms response data to display data', () => {
-    const wrapper = mount(<App />);
+    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const instance = wrapper.instance();
     const stubResponseData = {
       "Meta Data": {
