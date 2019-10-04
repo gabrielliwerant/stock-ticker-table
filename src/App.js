@@ -175,7 +175,7 @@ class App extends Component {
                         <TableCell align="right">{d["Average Daily Change"]}</TableCell>
                       </TableRow >
                     ))
-                : "No Data Loaded"}
+                : <TableRow><TableCell>"No Data Loaded"</TableCell></TableRow>}
               </TableBody>
             </Table>
           </Paper>
