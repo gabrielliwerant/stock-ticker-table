@@ -1,6 +1,6 @@
 # AIX Ticker Test
 
-Displays a list of tickers with some retrieved data, some derived data, and display hierarchically.
+Displays a list of tickers with some retrieved data, some derived data, and displays them hierarchically.
 
 - The ticker data that is displayed can be toggled on/off with switches in the interface.
 - The list of tickers to be retrieved can be set via the `tickers` array prop in `src/index.js`

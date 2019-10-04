@@ -18,6 +18,7 @@ function copyProps(src, target) {
     }), {});
   Object.defineProperties(target, props);
 }
+
 global.expect = expect;
 global.mount = mount;
 global.render = render;

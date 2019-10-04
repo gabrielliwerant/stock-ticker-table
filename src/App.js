@@ -36,16 +36,23 @@ class App extends Component {
     };
   }
 
+  /**
+   * first - most recent day close price
+   * last - oldest day close price
+   * numberOfDays - total number of days the stock price has been changing
+   */
   calculateAverageDailyChange(first, last, numberOfDays) {
     return (first - last) / numberOfDays;
   }
 
+  // Sort prices in descending order (highest first)
   compareLatestPrice(a, b) {
     if (a["Latest Price"] < b["Latest Price"]) return 1;
     if (a["Latest Price"] > b["Latest Price"]) return -1;
     return 0;
   }
 
+  // Sort dates in descending order (most recent first)
   compareDates(a, b) {
     if (a < b) return 1;
     if (a > b) return -1;
@@ -77,13 +84,14 @@ class App extends Component {
     const { data } = this.state;
     const index = data.findIndex(d => d.Ticker === display.Ticker);
 
-    // Non-negative index means we have an existed data set, so we overwrite it.
+    // Non-negative index means we have an existing data set, so we overwrite it.
     // Otherwise, we push a new one.
     if (~index) data[index] = display;
     else data.push(display);
 
-    // We clone here so that we can generate a list that won't be affected by
-    // sorting of the data
+    // KLUDGE: We clone here so that we can generate a list that won't be affected
+    // by sorting of the data, but we only use two of the fields, so we don't
+    // need to clone the entire object
     const displayList = cloneDeep(data);
 
     this.setState({ data, displayList });
@@ -94,6 +102,7 @@ class App extends Component {
     const index = data.findIndex(d => d.Ticker === ticker);
     const indexDisplay = displayList.findIndex(d => d.Ticker === ticker);
 
+    // If indexes exist, toggle the visibility
     if (~index) data[index].isVisible = !data[index].isVisible;
     if (~indexDisplay) displayList[indexDisplay].isVisible = !displayList[indexDisplay].isVisible;
 
