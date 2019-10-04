@@ -1,0 +1,15 @@
+{
+  "name": "aix-ticker-test",
+  "version": "0.0.1",
+  "description": "AIX Front End Software Developer Code Test (Ticker)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "aix-ticker-test"
+  },
+  "author": "Gabriel Liwerant",
+  "license": "ISC"
+}
