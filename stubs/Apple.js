@@ -1,4 +1,4 @@
-const AAPL = {
+const Apple = {
     "Meta Data": {
         "1. Information": "Daily Prices (open, high, low, close) and Volumes",
         "2. Symbol": "AAPL",
@@ -710,4 +710,4 @@ const AAPL = {
     }
 };
 
-export default AAPL;
+export default Apple;
