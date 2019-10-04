@@ -38,7 +38,7 @@ class App extends Component {
     return 0;
   }
 
-  resolveRequest(ticker, responseData) {
+  transformResponseDataToDisplayData(responseData) {
     const original = responseData["Time Series (Daily)"];
     const orderedDates = Object.keys(original).sort((a, b) => this.compareDates(a, b));
     const orderedDatesLen = orderedDates.length;
@@ -47,11 +47,18 @@ class App extends Component {
       original[orderedDates[orderedDatesLen - 1]]["4. close"],
       orderedDatesLen
     );
-    const display = {
+
+    // KLUDGE: parseFloat might be a problem, as js doesn't handle floats well,
+    // and we may end up with rounding errors
+    return {
       "Ticker": responseData["Meta Data"]["2. Symbol"],
       "Latest Price": parseFloat(original[orderedDates[0]]["4. close"], 10),
-      "Average Daily Change": averageDailyChange
+      "Average Daily Change": averageDailyChange.toFixed(2)
     };
+  }
+
+  resolveRequest(responseData) {
+    const display = this.transformResponseDataToDisplayData(responseData);
     const { data } = this.state;
     const index = data.findIndex(d => d.Ticker === display.Ticker);
 
@@ -64,11 +71,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.resolveRequest(STOCK_TICKERS.Apple, Apple);
-    this.resolveRequest(STOCK_TICKERS.Facebook, Facebook);
-    this.resolveRequest(STOCK_TICKERS.Tesla, Tesla);
-    this.resolveRequest(STOCK_TICKERS.Snapchat, Snapchat);
-    this.resolveRequest(STOCK_TICKERS.Google, Google);
+    this.resolveRequest(Apple);
+    this.resolveRequest(Facebook);
+    this.resolveRequest(Tesla);
+    this.resolveRequest(Snapchat);
+    this.resolveRequest(Google);
   }
 
   render() {
