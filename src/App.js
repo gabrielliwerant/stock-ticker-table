@@ -18,12 +18,12 @@ import Tesla from "../stubs/Tesla.js";
 import Snapchat from "../stubs/Snapchat.js";
 import Google from "../stubs/Google.js";
 
-const STOCK_TICKERS = {
-  "Apple": "AAPL",
-  "Facebook": "FB",
-  "Tesla": "TSLA",
-  "Snapchat": "SNAP",
-  "Google": "GOOG"
+const STUB_MAP = {
+  "AAPL": Apple,
+  "FB": Facebook,
+  "TSLA": Tesla,
+  "SNAP": Snapchat,
+  "GOOG": Google
 };
 
 class App extends Component {
@@ -101,40 +101,26 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const { USE_STUBBED_DATA } = this.props;
+    const { USE_STUBBED_DATA, tickers } = this.props;
 
     if (USE_STUBBED_DATA) {
-      this.resolveRequest(Apple);
-      this.resolveRequest(Facebook);
-      this.resolveRequest(Tesla);
-      this.resolveRequest(Snapchat);
-      this.resolveRequest(Google);
+      if (tickers && tickers.length) tickers.forEach(ticker => {
+        if (STUB_MAP[ticker]) this.resolveRequest(STUB_MAP[ticker]);
+      });
     } else {
-      const URI = "https://www.alphavantage.co/query";
-      const FUNCTION = "TIME_SERIES_DAILY";
+      if (tickers && tickers.length) {
+        const URI = "https://www.alphavantage.co/query";
+        const FUNCTION = "TIME_SERIES_DAILY";
 
-      // TODO: Hide me in environment variable for production
-      const API_KEY = "BIW60Z3KKM36A33Z";
+        // TODO: Hide me in environment variable for production
+        const API_KEY = "BIW60Z3KKM36A33Z";
 
-      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Apple}&apikey=${API_KEY}`)
-        .then(res => this.resolveRequest(res.data))
-        .catch(err => console.log(err));
-
-      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Facebook}&apikey=${API_KEY}`)
-        .then(res => this.resolveRequest(res.data))
-        .catch(err => console.log(err));
-
-      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Tesla}&apikey=${API_KEY}`)
-        .then(res => this.resolveRequest(res.data))
-        .catch(err => console.log(err));
-
-      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Snapchat}&apikey=${API_KEY}`)
-        .then(res => this.resolveRequest(res.data))
-        .catch(err => console.log(err));
-
-      axios.get(`${URI}?function=${FUNCTION}&symbol=${STOCK_TICKERS.Google}&apikey=${API_KEY}`)
-        .then(res => this.resolveRequest(res.data))
-        .catch(err => console.log(err));
+        tickers.forEach(ticker => {
+          axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${API_KEY}`)
+            .then(res => this.resolveRequest(res.data))
+            .catch(err => console.log(err));
+        });
+      }
     }
   }
 
