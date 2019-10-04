@@ -115,19 +115,19 @@ describe("<App />", () => {
     instance.handleTickerDisplayToggle("AAPL");
 
     let actualResultData = wrapper.state().data[0].isVisible;
-    let actualResultSisplayList = wrapper.state().displayList[0].isVisible;
+    let actualResultsDisplayList = wrapper.state().displayList[0].isVisible;
 
     assert.strictEqual(actualResultData, false);
-    assert.strictEqual(actualResultSisplayList, false);
+    assert.strictEqual(actualResultsDisplayList, false);
 
     // Should toggle back on
     instance.handleTickerDisplayToggle("AAPL");
 
     actualResultData = wrapper.state().data[0].isVisible;
-    actualResultSisplayList = wrapper.state().displayList[0].isVisible;
+    actualResultsDisplayList = wrapper.state().displayList[0].isVisible;
 
     assert.strictEqual(actualResultData, true);
-    assert.strictEqual(actualResultSisplayList, true);
+    assert.strictEqual(actualResultsDisplayList, true);
 
     wrapper.unmount();
   });
