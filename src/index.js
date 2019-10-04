@@ -4,4 +4,4 @@ import App from "./App.js";
 
 const tickers = ["AAPL", "FB", "TSLA", "SNAP", "GOOG"];
 
-ReactDOM.render(<App USE_STUBBED_DATA={true} tickers={tickers} />, document.getElementById("main"));
+ReactDOM.render(<App USE_STUBBED_DATA={false} tickers={tickers} />, document.getElementById("main"));
