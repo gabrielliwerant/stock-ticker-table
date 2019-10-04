@@ -53,4 +53,44 @@ describe('<App />', () => {
 
     wrapper.unmount();
   });
+
+  it('properly transforms response data to display data', () => {
+    const wrapper = mount(<App />);
+    const instance = wrapper.instance();
+    const stubResponseData = {
+      "Meta Data": {
+        "1. Information": "Daily Prices (open, high, low, close) and Volumes",
+        "2. Symbol": "AAPL",
+        "3. Last Refreshed": "2019-10-03",
+        "4. Output Size": "Compact",
+        "5. Time Zone": "US/Eastern"
+      },
+      "Time Series (Daily)": {
+        "2019-10-03": {
+            "1. open": "218.4300",
+            "2. high": "220.9600",
+            "3. low": "215.1320",
+            "4. close": "220.8200",
+            "5. volume": "26496983"
+        },
+        "2019-10-02": {
+            "1. open": "223.0600",
+            "2. high": "223.5800",
+            "3. low": "217.9300",
+            "4. close": "218.9600",
+            "5. volume": "34612300"
+        },
+      }
+    };
+    const expectedResult = {
+      "Ticker": "AAPL",
+      "Latest Price": 220.82,
+      "Average Daily Change": "0.93"
+    };
+
+    const actualResult = instance.transformResponseDataToDisplayData(stubResponseData);
+    assert.deepEqual(actualResult, expectedResult);
+
+    wrapper.unmount();
+  });
 });
