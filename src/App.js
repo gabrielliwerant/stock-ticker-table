@@ -187,7 +187,7 @@ const App = props => {
 
   return (
     <Fragment>
-      <Typography variant="h3">AIX Ticker Test</Typography>
+      <Typography variant="h3">Stock Ticker Table</Typography>
       <FormGroup row>
         {displayList && displayList.map(d =>
           <TickerDisplayToggle

@@ -1,4 +1,4 @@
-# AIX Ticker Test
+# Stock Ticker Table
 
 Displays a list of tickers with some retrieved data, some derived data, and displays them hierarchically.
 

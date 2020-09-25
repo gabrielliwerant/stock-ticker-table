@@ -1,7 +1,7 @@
 {
-  "name": "aix-ticker-test",
+  "name": "stock-ticker-table",
   "version": "0.0.1",
-  "description": "AIX Front End Software Developer Code Test (Ticker)",
+  "description": "Sample react application with simple stocker ticker data display",
   "main": "index.js",
   "scripts": {
     "test": "mocha --require @babel/register --require test/enzyme-config.js test/**/*.test.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "aix-ticker-test"
+    "url": "stock-ticker-table"
   },
   "author": "Gabriel Liwerant",
   "license": "ISC",
