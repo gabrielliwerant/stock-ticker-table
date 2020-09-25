@@ -43,24 +43,24 @@ describe("<App />", () => {
   });
 
   it("properly compares latest price", () => {
-    let actualResult = compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 2 });
+    let actualResult = compareLatestPrice(1, 2);
     assert.strictEqual(actualResult, 1);
 
-    actualResult = compareLatestPrice({ "Latest Price": 2 }, { "Latest Price": 1 });
+    actualResult = compareLatestPrice(2, 1);
     assert.strictEqual(actualResult, -1);
 
-    actualResult = compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 1 });
+    actualResult = compareLatestPrice(1, 1);
     assert.strictEqual(actualResult, 0);
   });
 
   it("properly compares dates", () => {
-    let actualResult = compareDates(1, 2);
+    let actualResult = compareDates("1", "2");
     assert.strictEqual(actualResult, 1);
 
-    actualResult = compareDates(2, 1);
+    actualResult = compareDates("2", "1");
     assert.strictEqual(actualResult, -1);
 
-    actualResult = compareDates(1, 1);
+    actualResult = compareDates("1", "1");
     assert.strictEqual(actualResult, 0);
   });
 

@@ -23,8 +23,8 @@ const calculateAverageDailyChange = (first, last, numberOfDays) => {
 
 // Sort prices in descending order (highest first)
 const compareLatestPrice = (a, b) => {
-  if (a["Latest Price"] < b["Latest Price"]) return 1;
-  if (a["Latest Price"] > b["Latest Price"]) return -1;
+  if (a < b) return 1;
+  if (a > b) return -1;
   return 0;
 };
 
@@ -156,7 +156,7 @@ const App = props => {
           <TableBody>
             {data && data.length
               ? data
-                  .sort((a, b) => compareLatestPrice(a, b))
+                  .sort((a, b) => compareLatestPrice(a["Latest Price"], b["Latest Price"]))
                   .map(d => d.isVisible &&
                     <TickerDataRow
                       key={d.Ticker}
