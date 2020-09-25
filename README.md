@@ -15,6 +15,8 @@ NOTE: Repo uses a `.env` file which should be untracked, but remains tracked for
 
 ## Running in production
 
+NOTE: `dist` folder is tracked for demonstration purposes, but would normally be generated during build process.
+
 1. Set `USE_STUBBED_DATA` to `false` in `.env`
 1. `npm run build`
 1. Deploy `dist` folder (contains all main assets)
