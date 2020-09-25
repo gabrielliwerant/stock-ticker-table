@@ -77,8 +77,8 @@ const transformResponseDataToDisplayData = responseData => {
   const orderedDates = Object.keys(original).sort((a, b) => compareDates(a, b));
   const orderedDatesLen = orderedDates.length;
   const averageDailyChange = calculateAverageDailyChange(
-    original[orderedDates[0]]["4. close"],
-    original[orderedDates[orderedDatesLen - 1]]["4. close"],
+    parseFloat(original[orderedDates[0]]["4. close"]),
+    parseFloat(original[orderedDates[orderedDatesLen - 1]]["4. close"]),
     orderedDatesLen
   );
 
