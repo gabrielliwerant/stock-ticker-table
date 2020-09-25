@@ -1,3 +1,9 @@
+/**
+ * TickerDisplayToggle
+ *
+ * Handles the individual ticker toggle switches for managing data display
+ */
+
 import React, { Component, Fragment } from "react";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";

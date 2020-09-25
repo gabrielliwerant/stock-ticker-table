@@ -1,3 +1,9 @@
+/**
+ * App
+ *
+ * Handles the main application logic and display
+ */
+
 import React, { useState, useEffect, Fragment } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -13,29 +19,51 @@ import TickerDisplayToggle from './TickerDisplayToggle';
 import TickerDataRow from './TickerDataRow';
 
 /**
- * first - most recent day close price
- * last - oldest day close price
- * numberOfDays - total number of days the stock price has been changing
+ * Compare the most recent price with earliest and average over the number of
+ * days the stock price has been tracked.
+ *
+ * @param {number} first - Most recent day close price
+ * @param {number} last - Oldest day close price
+ * @param {number} numberOfDays - Total number of days the stock price has been
+ *  changing
+ * @returns {number}
  */
 const calculateAverageDailyChange = (first, last, numberOfDays) => {
   return (first - last) / numberOfDays;
 };
 
-// Sort prices in descending order (highest first)
+/**
+ * Sort prices in descending order (highest first)
+ *
+ * @param {number} a
+ * @param {number} b
+ * @returns {number} - 1, -1, 0 for comparisons
+ */
 const compareLatestPrice = (a, b) => {
   if (a < b) return 1;
   if (a > b) return -1;
   return 0;
 };
 
-// Sort dates in descending order (most recent first)
+/**
+ * Sort dates in descending order (most recent first)
+ *
+ * @param {string} a - yyyy-mm-dd
+ * @param {string} b - yyyy-mm-dd
+ * @returns {number} - 1, -1, 0 for comparisons
+ */
 const compareDates = (a, b) => {
   if (a < b) return 1;
   if (a > b) return -1;
   return 0;
 };
 
-// Take API response data and return transformed structure
+/**
+ * Take API response data and return transformed structure
+ *
+ * @param {object} responseData
+ * @returns {object}
+ */
 const transformResponseDataToDisplayData = responseData => {
   const original = responseData["Time Series (Daily)"];
   const orderedDates = Object.keys(original).sort((a, b) => compareDates(a, b));
@@ -56,7 +84,13 @@ const transformResponseDataToDisplayData = responseData => {
   };
 };
 
-// Create new data array, updated with ticker visibility
+/**
+ * Create new data array, updated with ticker visibility
+ *
+ * @param {string} ticker
+ * @param {array of object} data
+ * @returns {array of object}
+ */
 const getUpdatedVisibilityData = (ticker, data) => {
   let newData;
   const index = data.findIndex(d => d.Ticker === ticker);
@@ -70,7 +104,13 @@ const getUpdatedVisibilityData = (ticker, data) => {
   return newData;
 };
 
-// Create new ticker display array, updated with ticker visibility
+/**
+ * Create new ticker display array, updated with ticker visibility
+ *
+ * @param {string} ticker
+ * @param {array of object} displayList
+ * @returns {array of object}
+ */
 const getUpdatedVisibilityDisplayList = (ticker, displayList) => {
   let newDisplayList;
   const indexDisplay = displayList.findIndex(d => d.Ticker === ticker);
@@ -88,6 +128,7 @@ const App = props => {
   const [data, setData] = useState([]);
   const [displayList, setDisplayList] = useState([]);
 
+  /** Handles initial data gathering when component loads */
   useEffect(() => {
     const { tickers, stubMap } = props;
 
@@ -109,6 +150,12 @@ const App = props => {
     }
   }, [resolveRequest, setData, setDisplayList]);
 
+  /**
+   * Sets state when resolving successful API response
+   *
+   * @param {object} responseData
+   * @returns {void}
+   */
   const resolveRequest = responseData => {
     const display = transformResponseDataToDisplayData(responseData);
     const index = data.findIndex(d => d.Ticker === display.Ticker);
@@ -126,6 +173,13 @@ const App = props => {
     setDisplayList(displayList);
   };
 
+  /**
+   * Handles the toggling of ticker display switches by updating state
+   * visibility appropriately.
+   *
+   * @param {string} ticker
+   * @returns {void}
+   */
   const handleTickerDisplayToggle = ticker => {
     setData(getUpdatedVisibilityData(ticker, data));
     setDisplayList(getUpdatedVisibilityDisplayList(ticker, displayList));
