@@ -1,12 +1,34 @@
 import React from "react";
 import { assert } from "chai";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { cloneDeep } from "lodash";
 import App from "../src/App.js";
+import {
+  calculateAverageDailyChange,
+  compareLatestPrice,
+  compareDates,
+  transformResponseDataToDisplayData,
+  getUpdatedVisibilityData,
+  getUpdatedVisibilityDisplayList
+} from "../src/App.js";
+
+import Apple from "../stubs/Apple.js";
+import Facebook from "../stubs/Facebook.js";
+import Tesla from "../stubs/Tesla.js";
+import Snapchat from "../stubs/Snapchat.js";
+import Google from "../stubs/Google.js";
+
+const STUB_MAP = {
+  "AAPL": Apple,
+  "FB": Facebook,
+  "TSLA": Tesla,
+  "SNAP": Snapchat,
+  "GOOG": Google
+};
 
 describe("<App />", () => {
   it("renders", () => {
-    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
+    const wrapper = mount(<App stubMap={STUB_MAP} />);
 
     assert.isDefined(wrapper);
 
@@ -14,50 +36,35 @@ describe("<App />", () => {
   });
 
   it("properly calculates average daily change", () => {
-    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
     const expectedResult = 1;
-    const actualResult = wrapper.instance().calculateAverageDailyChange(11, 1, 10);
+    const actualResult = calculateAverageDailyChange(11, 1, 10);
 
     assert.strictEqual(actualResult, expectedResult);
-
-    wrapper.unmount();
   });
 
   it("properly compares latest price", () => {
-    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
-    const instance = wrapper.instance();
-
-    let actualResult = instance.compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 2 });
+    let actualResult = compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 2 });
     assert.strictEqual(actualResult, 1);
 
-    actualResult = instance.compareLatestPrice({ "Latest Price": 2 }, { "Latest Price": 1 });
+    actualResult = compareLatestPrice({ "Latest Price": 2 }, { "Latest Price": 1 });
     assert.strictEqual(actualResult, -1);
 
-    actualResult = instance.compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 1 });
+    actualResult = compareLatestPrice({ "Latest Price": 1 }, { "Latest Price": 1 });
     assert.strictEqual(actualResult, 0);
-
-    wrapper.unmount();
   });
 
   it("properly compares dates", () => {
-    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
-    const instance = wrapper.instance();
-
-    let actualResult = instance.compareDates(1, 2);
+    let actualResult = compareDates(1, 2);
     assert.strictEqual(actualResult, 1);
 
-    actualResult = instance.compareDates(2, 1);
+    actualResult = compareDates(2, 1);
     assert.strictEqual(actualResult, -1);
 
-    actualResult = instance.compareDates(1, 1);
+    actualResult = compareDates(1, 1);
     assert.strictEqual(actualResult, 0);
-
-    wrapper.unmount();
   });
 
   it("properly transforms response data to display data", () => {
-    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
-    const instance = wrapper.instance();
     const stubResponseData = {
       "Meta Data": {
         "1. Information": "Daily Prices (open, high, low, close) and Volumes",
@@ -90,45 +97,44 @@ describe("<App />", () => {
       isVisible: true
     };
 
-    const actualResult = instance.transformResponseDataToDisplayData(stubResponseData);
+    const actualResult = transformResponseDataToDisplayData(stubResponseData);
     assert.deepEqual(actualResult, expectedResult);
-
-    wrapper.unmount();
   });
 
   it("properly toggles display variable for tickers", () => {
-    const wrapper = mount(<App USE_STUBBED_DATA={true} />);
-    const instance = wrapper.instance();
-    const stub = [{
+    const dataOn = [{
       "Ticker": "AAPL",
       "Latest Price": 220.82,
       "Average Daily Change": "0.93",
       isVisible: true
     }];
+    const expectedDataOff = [{
+      "Ticker": "AAPL",
+      "Latest Price": 220.82,
+      "Average Daily Change": "0.93",
+      isVisible: false
+    }];
+    const displayListOn = [{
+      "Ticker": "AAPL",
+      isVisible: true
+    }];
+    const expectedDisplayListOff = [{
+      "Ticker": "AAPL",
+      isVisible: false
+    }];
 
-    wrapper.setState({
-      data: stub,
-      displayList: cloneDeep(stub)
-    });
+    // Toggle off
+    let actualDataOff = getUpdatedVisibilityData("AAPL", dataOn);
+    let actualDisplayListOff = getUpdatedVisibilityDisplayList("AAPL", displayListOn);
 
-    // Should toggle off
-    instance.handleTickerDisplayToggle("AAPL");
+    assert.deepEqual(actualDataOff, expectedDataOff);
+    assert.deepEqual(actualDisplayListOff, expectedDisplayListOff);
 
-    let actualResultData = wrapper.state().data[0].isVisible;
-    let actualResultsDisplayList = wrapper.state().displayList[0].isVisible;
+    // Toggle on
+    let actualDataOn = getUpdatedVisibilityData("AAPL", actualDataOff);
+    let actualDisplayListOn = getUpdatedVisibilityDisplayList("AAPL", actualDisplayListOff);
 
-    assert.strictEqual(actualResultData, false);
-    assert.strictEqual(actualResultsDisplayList, false);
-
-    // Should toggle back on
-    instance.handleTickerDisplayToggle("AAPL");
-
-    actualResultData = wrapper.state().data[0].isVisible;
-    actualResultsDisplayList = wrapper.state().displayList[0].isVisible;
-
-    assert.strictEqual(actualResultData, true);
-    assert.strictEqual(actualResultsDisplayList, true);
-
-    wrapper.unmount();
+    assert.deepEqual(actualDataOn, dataOn);
+    assert.deepEqual(actualDisplayListOn, displayListOn);
   });
 });

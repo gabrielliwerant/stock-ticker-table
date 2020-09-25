@@ -12,18 +12,76 @@ import axios from "axios";
 import TickerDisplayToggle from './TickerDisplayToggle';
 import TickerDataRow from './TickerDataRow';
 
-import Apple from "../stubs/Apple.js";
-import Facebook from "../stubs/Facebook.js";
-import Tesla from "../stubs/Tesla.js";
-import Snapchat from "../stubs/Snapchat.js";
-import Google from "../stubs/Google.js";
+/**
+ * first - most recent day close price
+ * last - oldest day close price
+ * numberOfDays - total number of days the stock price has been changing
+ */
+const calculateAverageDailyChange = (first, last, numberOfDays) => {
+  return (first - last) / numberOfDays;
+};
 
-const STUB_MAP = {
-  "AAPL": Apple,
-  "FB": Facebook,
-  "TSLA": Tesla,
-  "SNAP": Snapchat,
-  "GOOG": Google
+// Sort prices in descending order (highest first)
+const compareLatestPrice = (a, b) => {
+  if (a["Latest Price"] < b["Latest Price"]) return 1;
+  if (a["Latest Price"] > b["Latest Price"]) return -1;
+  return 0;
+};
+
+// Sort dates in descending order (most recent first)
+const compareDates = (a, b) => {
+  if (a < b) return 1;
+  if (a > b) return -1;
+  return 0;
+};
+
+// Take API response data and return transformed structure
+const transformResponseDataToDisplayData = responseData => {
+  const original = responseData["Time Series (Daily)"];
+  const orderedDates = Object.keys(original).sort((a, b) => compareDates(a, b));
+  const orderedDatesLen = orderedDates.length;
+  const averageDailyChange = calculateAverageDailyChange(
+    original[orderedDates[0]]["4. close"],
+    original[orderedDates[orderedDatesLen - 1]]["4. close"],
+    orderedDatesLen
+  );
+
+  // KLUDGE: parseFloat might be a problem, as js doesn't handle floats well,
+  // and we may end up with rounding errors
+  return {
+    "Ticker": responseData["Meta Data"]["2. Symbol"],
+    "Latest Price": parseFloat(original[orderedDates[0]]["4. close"], 10),
+    "Average Daily Change": averageDailyChange.toFixed(2),
+    isVisible: true
+  };
+};
+
+// Create new data array, updated with ticker visibility
+const getUpdatedVisibilityData = (ticker, data) => {
+  let newData;
+  const index = data.findIndex(d => d.Ticker === ticker);
+
+  // If indexes exist, toggle the visibility
+  if (~index) newData = data.map(d => {
+    if (d.Ticker === ticker) return { ...d, isVisible: !d.isVisible };
+    return d;
+  });
+
+  return newData;
+};
+
+// Create new ticker display array, updated with ticker visibility
+const getUpdatedVisibilityDisplayList = (ticker, displayList) => {
+  let newDisplayList;
+  const indexDisplay = displayList.findIndex(d => d.Ticker === ticker);
+
+  // If indexes exist, toggle the visibility
+  if (~indexDisplay) newDisplayList = displayList.map(d => {
+    if (d.Ticker === ticker) return { ...d, isVisible: !d.isVisible };
+    return d;
+  });
+
+  return newDisplayList;
 };
 
 const App = props => {
@@ -31,11 +89,11 @@ const App = props => {
   const [displayList, setDisplayList] = useState([]);
 
   useEffect(() => {
-    const { tickers } = props;
+    const { tickers, stubMap } = props;
 
     if (process.env.USE_STUBBED_DATA === "true") {
       if (tickers && tickers.length) tickers.forEach(ticker => {
-        if (STUB_MAP[ticker]) resolveRequest(STUB_MAP[ticker]);
+        if (stubMap[ticker]) resolveRequest(stubMap[ticker]);
       });
     } else {
       if (tickers && tickers.length) {
@@ -51,50 +109,7 @@ const App = props => {
     }
   }, [resolveRequest, setData, setDisplayList]);
 
-  /**
-   * first - most recent day close price
-   * last - oldest day close price
-   * numberOfDays - total number of days the stock price has been changing
-   */
-  const calculateAverageDailyChange = (first, last, numberOfDays) => {
-    return (first - last) / numberOfDays;
-  };
-
-  // Sort prices in descending order (highest first)
-  const compareLatestPrice = (a, b) => {
-    if (a["Latest Price"] < b["Latest Price"]) return 1;
-    if (a["Latest Price"] > b["Latest Price"]) return -1;
-    return 0;
-  };
-
-  // Sort dates in descending order (most recent first)
-  const compareDates = (a, b) => {
-    if (a < b) return 1;
-    if (a > b) return -1;
-    return 0;
-  };
-
-  const transformResponseDataToDisplayData = (responseData) => {
-    const original = responseData["Time Series (Daily)"];
-    const orderedDates = Object.keys(original).sort((a, b) => compareDates(a, b));
-    const orderedDatesLen = orderedDates.length;
-    const averageDailyChange = calculateAverageDailyChange(
-      original[orderedDates[0]]["4. close"],
-      original[orderedDates[orderedDatesLen - 1]]["4. close"],
-      orderedDatesLen
-    );
-
-    // KLUDGE: parseFloat might be a problem, as js doesn't handle floats well,
-    // and we may end up with rounding errors
-    return {
-      "Ticker": responseData["Meta Data"]["2. Symbol"],
-      "Latest Price": parseFloat(original[orderedDates[0]]["4. close"], 10),
-      "Average Daily Change": averageDailyChange.toFixed(2),
-      isVisible: true
-    };
-  };
-
-  const resolveRequest = (responseData) => {
+  const resolveRequest = responseData => {
     const display = transformResponseDataToDisplayData(responseData);
     const index = data.findIndex(d => d.Ticker === display.Ticker);
 
@@ -111,20 +126,9 @@ const App = props => {
     setDisplayList(displayList);
   };
 
-  const handleTickerDisplayToggle = (ticker) => {
-    let newDisplayList;
-    const index = data.findIndex(d => d.Ticker === ticker);
-    const indexDisplay = displayList.findIndex(d => d.Ticker === ticker);
-
-    // If indexes exist, toggle the visibility
-    if (~index) data[index].isVisible = !data[index].isVisible;
-    if (~indexDisplay) newDisplayList = displayList.map(d => {
-      if (d.Ticker === ticker) return { ...d, isVisible: !d.isVisible };
-      return d;
-    });
-
-    setData(data);
-    setDisplayList(newDisplayList);
+  const handleTickerDisplayToggle = ticker => {
+    setData(getUpdatedVisibilityData(ticker, data));
+    setDisplayList(getUpdatedVisibilityDisplayList(ticker, displayList));
   };
 
   return (
@@ -170,3 +174,11 @@ const App = props => {
 }
 
 export default App;
+export {
+  calculateAverageDailyChange,
+  compareLatestPrice,
+  compareDates,
+  transformResponseDataToDisplayData,
+  getUpdatedVisibilityData,
+  getUpdatedVisibilityDisplayList
+};
