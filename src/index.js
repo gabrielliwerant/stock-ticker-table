@@ -16,6 +16,4 @@ const STUB_MAP = {
   "GOOG": Google
 };
 
-const tickers = ["AAPL", "FB", "TSLA", "SNAP", "GOOG"];
-
-ReactDOM.render(<App tickers={tickers} stubMap={STUB_MAP} />, document.getElementById("main"));
+ReactDOM.render(<App stubMap={STUB_MAP} />, document.getElementById("main"));

@@ -18,6 +18,8 @@ import axios from "axios";
 import TickerDisplayToggle from './TickerDisplayToggle';
 import TickerDataRow from './TickerDataRow';
 
+const TICKERS = ["AAPL", "FB", "TSLA", "SNAP", "GOOG"];
+
 /**
  * Compare the most recent price with earliest and average over the number of
  * days the stock price has been tracked.
@@ -130,23 +132,21 @@ const App = props => {
 
   /** Handles initial data gathering when component loads */
   useEffect(() => {
-    const { tickers, stubMap } = props;
+    const { stubMap } = props;
 
     if (process.env.USE_STUBBED_DATA === "true") {
-      if (tickers && tickers.length) tickers.forEach(ticker => {
+      TICKERS.forEach(ticker => {
         if (stubMap[ticker]) resolveRequest(stubMap[ticker]);
       });
     } else {
-      if (tickers && tickers.length) {
-        const URI = "https://www.alphavantage.co/query";
-        const FUNCTION = "TIME_SERIES_DAILY";
+      const URI = "https://www.alphavantage.co/query";
+      const FUNCTION = "TIME_SERIES_DAILY";
 
-        tickers.forEach(ticker => {
-          axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${process.env.API_KEY}`)
-            .then(res => resolveRequest(res.data))
-            .catch(err => console.log(err));
-        });
-      }
+      TICKERS.forEach(ticker => {
+        axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${process.env.API_KEY}`)
+          .then(res => resolveRequest(res.data))
+          .catch(err => console.log(err));
+      });
     }
   }, [resolveRequest, setData, setDisplayList]);
 
