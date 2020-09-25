@@ -7,10 +7,10 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
 import { cloneDeep } from "lodash";
 import axios from "axios";
+
+import TickerDisplayToggle from './TickerDisplayToggle';
 
 import Apple from "../stubs/Apple.js";
 import Facebook from "../stubs/Facebook.js";
@@ -34,6 +34,8 @@ class App extends Component {
       data: [],
       displayList: []
     };
+
+    this.handleTickerDisplayToggle = this.handleTickerDisplayToggle.bind(this);
   }
 
   /**
@@ -140,20 +142,14 @@ class App extends Component {
       <Fragment>
         <Typography variant="h3">AIX Ticker Test</Typography>
         <FormGroup row>
-          {displayList && displayList.map(d => (
-            <FormControlLabel
+          {displayList && displayList.map(d =>
+            <TickerDisplayToggle
               key={d.Ticker}
-              control={
-                <Switch
-                  checked={d.isVisible}
-                  onChange={() => this.handleTickerDisplayToggle(d.Ticker)}
-                  value={d.Ticker}
-                  color="primary"
-                />
-              }
-              label={d.Ticker}
+              ticker={d.Ticker}
+              isVisible={d.isVisible}
+              onChange={this.handleTickerDisplayToggle}
             />
-          ))}
+          )}
         </FormGroup>
         <Paper>
           <Table>
