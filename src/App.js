@@ -11,6 +11,7 @@ import { cloneDeep } from "lodash";
 import axios from "axios";
 
 import TickerDisplayToggle from './TickerDisplayToggle';
+import TickerDataRow from './TickerDataRow';
 
 import Apple from "../stubs/Apple.js";
 import Facebook from "../stubs/Facebook.js";
@@ -164,13 +165,14 @@ class App extends Component {
               {data && data.length
                 ? data
                     .sort((a, b) => this.compareLatestPrice(a, b))
-                    .map(d => d.isVisible && (
-                      <TableRow key={d.Ticker}>
-                        <TableCell>{d.Ticker}</TableCell>
-                        <TableCell align="right">{d["Latest Price"]}</TableCell>
-                        <TableCell align="right">{d["Average Daily Change"]}</TableCell>
-                      </TableRow >
-                    ))
+                    .map(d => d.isVisible &&
+                      <TickerDataRow
+                        key={d.Ticker}
+                        ticker={d.Ticker}
+                        latestPrice={d["Latest Price"]}
+                        averageDailyChange={d["Average Daily Change"]}
+                      />
+                    )
                 : <TableRow><TableCell>"No Data Loaded"</TableCell></TableRow>}
               </TableBody>
             </Table>
