@@ -20,6 +20,12 @@ import TickerDataRow from './TickerDataRow';
 
 const TICKERS = ["AAPL", "FB", "TSLA", "SNAP", "GOOG"];
 
+const styles = {
+  bold: {
+    fontWeight: 'bold'
+  }
+};
+
 /**
  * Compare the most recent price with earliest and average over the number of
  * days the stock price has been tracked.
@@ -202,9 +208,9 @@ const App = props => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Ticker</TableCell>
-              <TableCell align="right">Latest Price</TableCell>
-              <TableCell align="right">Average Daily Change</TableCell>
+              <TableCell style={styles.bold}>Ticker</TableCell>
+              <TableCell style={styles.bold} align="right">Latest Price</TableCell>
+              <TableCell style={styles.bold} align="right">Average Daily Change</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
