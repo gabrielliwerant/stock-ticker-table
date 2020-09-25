@@ -24,6 +24,9 @@ const TICKERS = ["AAPL", "FB", "TSLA", "SNAP", "GOOG"];
 const styles = {
   bold: {
     fontWeight: 'bold'
+  },
+  bottomSpacing: {
+    marginBottom: '20px'
   }
 };
 
@@ -194,8 +197,8 @@ const App = props => {
 
   return (
     <Fragment>
-      <Typography variant="h3">Stock Ticker Table</Typography>
-      <FormGroup row>
+      <Typography style={styles.bottomSpacing} variant="h3">Stock Ticker Table</Typography>
+      <FormGroup style={styles.bottomSpacing} row>
         {displayList && displayList.map(d =>
           <TickerDisplayToggle
             key={d.Ticker}
