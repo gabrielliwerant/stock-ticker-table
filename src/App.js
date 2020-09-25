@@ -31,9 +31,9 @@ const App = props => {
   const [displayList, setDisplayList] = useState([]);
 
   useEffect(() => {
-    const { USE_STUBBED_DATA, tickers } = props;
+    const { tickers } = props;
 
-    if (USE_STUBBED_DATA) {
+    if (process.env.USE_STUBBED_DATA === "true") {
       if (tickers && tickers.length) tickers.forEach(ticker => {
         if (STUB_MAP[ticker]) resolveRequest(STUB_MAP[ticker]);
       });
@@ -42,11 +42,8 @@ const App = props => {
         const URI = "https://www.alphavantage.co/query";
         const FUNCTION = "TIME_SERIES_DAILY";
 
-        // TODO: Hide me in environment variable for production
-        const API_KEY = "BIW60Z3KKM36A33Z";
-
         tickers.forEach(ticker => {
-          axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${API_KEY}`)
+          axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${process.env.API_KEY}`)
             .then(res => resolveRequest(res.data))
             .catch(err => console.log(err));
         });
