@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -26,46 +26,62 @@ const STUB_MAP = {
   "GOOG": Google
 };
 
-class App extends Component {
-  constructor(props) {
-    super(props);
+const App = props => {
+  const [data, setData] = useState([]);
+  const [displayList, setDisplayList] = useState([]);
 
-    this.state = {
-      data: [],
-      displayList: []
-    };
+  useEffect(() => {
+    const { USE_STUBBED_DATA, tickers } = props;
 
-    this.handleTickerDisplayToggle = this.handleTickerDisplayToggle.bind(this);
-  }
+    if (USE_STUBBED_DATA) {
+      if (tickers && tickers.length) tickers.forEach(ticker => {
+        if (STUB_MAP[ticker]) resolveRequest(STUB_MAP[ticker]);
+      });
+    } else {
+      if (tickers && tickers.length) {
+        const URI = "https://www.alphavantage.co/query";
+        const FUNCTION = "TIME_SERIES_DAILY";
+
+        // TODO: Hide me in environment variable for production
+        const API_KEY = "BIW60Z3KKM36A33Z";
+
+        tickers.forEach(ticker => {
+          axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${API_KEY}`)
+            .then(res => resolveRequest(res.data))
+            .catch(err => console.log(err));
+        });
+      }
+    }
+  }, [resolveRequest, setData, setDisplayList]);
 
   /**
    * first - most recent day close price
    * last - oldest day close price
    * numberOfDays - total number of days the stock price has been changing
    */
-  calculateAverageDailyChange(first, last, numberOfDays) {
+  const calculateAverageDailyChange = (first, last, numberOfDays) => {
     return (first - last) / numberOfDays;
-  }
+  };
 
   // Sort prices in descending order (highest first)
-  compareLatestPrice(a, b) {
+  const compareLatestPrice = (a, b) => {
     if (a["Latest Price"] < b["Latest Price"]) return 1;
     if (a["Latest Price"] > b["Latest Price"]) return -1;
     return 0;
-  }
+  };
 
   // Sort dates in descending order (most recent first)
-  compareDates(a, b) {
+  const compareDates = (a, b) => {
     if (a < b) return 1;
     if (a > b) return -1;
     return 0;
-  }
+  };
 
-  transformResponseDataToDisplayData(responseData) {
+  const transformResponseDataToDisplayData = (responseData) => {
     const original = responseData["Time Series (Daily)"];
-    const orderedDates = Object.keys(original).sort((a, b) => this.compareDates(a, b));
+    const orderedDates = Object.keys(original).sort((a, b) => compareDates(a, b));
     const orderedDatesLen = orderedDates.length;
-    const averageDailyChange = this.calculateAverageDailyChange(
+    const averageDailyChange = calculateAverageDailyChange(
       original[orderedDates[0]]["4. close"],
       original[orderedDates[orderedDatesLen - 1]]["4. close"],
       orderedDatesLen
@@ -79,11 +95,10 @@ class App extends Component {
       "Average Daily Change": averageDailyChange.toFixed(2),
       isVisible: true
     };
-  }
+  };
 
-  resolveRequest(responseData) {
-    const display = this.transformResponseDataToDisplayData(responseData);
-    const { data } = this.state;
+  const resolveRequest = (responseData) => {
+    const display = transformResponseDataToDisplayData(responseData);
     const index = data.findIndex(d => d.Ticker === display.Ticker);
 
     // Non-negative index means we have an existing data set, so we overwrite it.
@@ -95,89 +110,66 @@ class App extends Component {
     // sorting of the data, but we only use two of the fields.
     const displayList = data.map(d => ({ Ticker: d.Ticker, isVisible: d.isVisible }));
 
-    this.setState({ data, displayList });
-  }
+    setData(data);
+    setDisplayList(displayList);
+  };
 
-  handleTickerDisplayToggle(ticker) {
-    const { data, displayList } = this.state;
+  const handleTickerDisplayToggle = (ticker) => {
+    let newDisplayList;
     const index = data.findIndex(d => d.Ticker === ticker);
     const indexDisplay = displayList.findIndex(d => d.Ticker === ticker);
 
     // If indexes exist, toggle the visibility
     if (~index) data[index].isVisible = !data[index].isVisible;
-    if (~indexDisplay) displayList[indexDisplay].isVisible = !displayList[indexDisplay].isVisible;
+    if (~indexDisplay) newDisplayList = displayList.map(d => {
+      if (d.Ticker === ticker) return { ...d, isVisible: !d.isVisible };
+      return d;
+    });
 
-    this.setState({ data, displayList });
-  }
+    setData(data);
+    setDisplayList(newDisplayList);
+  };
 
-  componentDidMount() {
-    const { USE_STUBBED_DATA, tickers } = this.props;
-
-    if (USE_STUBBED_DATA) {
-      if (tickers && tickers.length) tickers.forEach(ticker => {
-        if (STUB_MAP[ticker]) this.resolveRequest(STUB_MAP[ticker]);
-      });
-    } else {
-      if (tickers && tickers.length) {
-        const URI = "https://www.alphavantage.co/query";
-        const FUNCTION = "TIME_SERIES_DAILY";
-
-        // TODO: Hide me in environment variable for production
-        const API_KEY = "BIW60Z3KKM36A33Z";
-
-        tickers.forEach(ticker => {
-          axios.get(`${URI}?function=${FUNCTION}&symbol=${ticker}&apikey=${API_KEY}`)
-            .then(res => this.resolveRequest(res.data))
-            .catch(err => console.log(err));
-        });
-      }
-    }
-  }
-
-  render() {
-    const { data, displayList } = this.state;
-
-    return (
-      <Fragment>
-        <Typography variant="h3">AIX Ticker Test</Typography>
-        <FormGroup row>
-          {displayList && displayList.map(d =>
-            <TickerDisplayToggle
-              key={d.Ticker}
-              ticker={d.Ticker}
-              isVisible={d.isVisible}
-              onChange={this.handleTickerDisplayToggle}
-            />
-          )}
-        </FormGroup>
-        <Paper>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Ticker</TableCell>
-                <TableCell align="right">Latest Price</TableCell>
-                <TableCell align="right">Average Daily Change</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data && data.length
-                ? data
-                    .sort((a, b) => this.compareLatestPrice(a, b))
-                    .map(d => d.isVisible &&
-                      <TickerDataRow
-                        key={d.Ticker}
-                        ticker={d.Ticker}
-                        latestPrice={d["Latest Price"]}
-                        averageDailyChange={d["Average Daily Change"]}
-                      />
-                    )
-                : <TableRow><TableCell>"No Data Loaded"</TableCell></TableRow>}
-              </TableBody>
-            </Table>
-          </Paper>
-      </Fragment>
-    );
-  }
+  return (
+    <Fragment>
+      <Typography variant="h3">AIX Ticker Test</Typography>
+      <FormGroup row>
+        {displayList && displayList.map(d =>
+          <TickerDisplayToggle
+            key={d.Ticker}
+            ticker={d.Ticker}
+            isVisible={d.isVisible}
+            onChange={handleTickerDisplayToggle}
+          />
+        )}
+      </FormGroup>
+      <Paper>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Ticker</TableCell>
+              <TableCell align="right">Latest Price</TableCell>
+              <TableCell align="right">Average Daily Change</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data && data.length
+              ? data
+                  .sort((a, b) => compareLatestPrice(a, b))
+                  .map(d => d.isVisible &&
+                    <TickerDataRow
+                      key={d.Ticker}
+                      ticker={d.Ticker}
+                      latestPrice={d["Latest Price"]}
+                      averageDailyChange={d["Average Daily Change"]}
+                    />
+                  )
+              : <TableRow><TableCell>"No Data Loaded"</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </Paper>
+    </Fragment>
+  );
 }
 
 export default App;
