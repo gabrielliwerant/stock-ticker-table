@@ -3,7 +3,7 @@
 Displays a list of tickers with some retrieved data, some derived data, and displays them hierarchically.
 
 - The ticker data that is displayed can be toggled on/off with switches in the interface.
-- The list of tickers to be retrieved can be set via the `TICKERS` array prop in `src/App.js`
+- The list of tickers to be retrieved can be set via the `TICKERS` array in `src/App.js`
 
 NOTE: Repo uses a `.env` file which should be untracked, but remains tracked for now for demonstration purposes.
 
