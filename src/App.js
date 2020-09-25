@@ -7,7 +7,6 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import FormGroup from "@material-ui/core/FormGroup";
-import { cloneDeep } from "lodash";
 import axios from "axios";
 
 import TickerDisplayToggle from './TickerDisplayToggle';
@@ -92,10 +91,9 @@ class App extends Component {
     if (~index) data[index] = display;
     else data.push(display);
 
-    // KLUDGE: We clone here so that we can generate a list that won't be affected
-    // by sorting of the data, but we only use two of the fields, so we don't
-    // need to clone the entire object
-    const displayList = cloneDeep(data);
+    // We use a separate list for display options that won't be affected by
+    // sorting of the data, but we only use two of the fields.
+    const displayList = data.map(d => ({ Ticker: d.Ticker, isVisible: d.isVisible }));
 
     this.setState({ data, displayList });
   }
